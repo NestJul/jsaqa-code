@@ -1,22 +1,70 @@
-const { test, expect } = require("@playwright/test");
+// tests/auth/login.spec.js
+const {
+	test,
+	expect
+} = require('@playwright/test');
+const {
+	email,
+	password
+} = require('../user');
 
-test("test", async ({ page }) => {
-  // Go to https://netology.ru/free/management#/
-  await page.goto("https://netology.ru/free/management#/");
+test('Успешная авторизация', async ({
+	page
+}) => {
+	await page.goto('https://netology.ru');
 
-  // Click a
-  await page.click("a");
-  await expect(page).toHaveURL("https://netology.ru/");
+	// Открываем форму авторизации
+	await page.click('text=Войти');
 
-  // Click text=Учиться бесплатно
-  await page.click("text=Учиться бесплатно");
-  await expect(page).toHaveURL("https://netology.ru/free");
+	// Ждем появления всех необходимых элементов
 
-  page.click("text=Бизнес и управление");
+	await page.waitForSelector('input[name="email"]', {
+		visible: true,
+		timeout: 5000
+	});
+	await page.waitForSelector('input[name="password"]', {
+		visible: true,
+		timeout: 5000
+	});
 
-  // Click text=Как перенести своё дело в онлайн
-  await page.click("text=Как перенести своё дело в онлайн");
-  await expect(page).toHaveURL(
-    "https://netology.ru/programs/kak-perenesti-svoyo-delo-v-onlajn-bp"
-  );
+	// Заполняем поля
+	await page.fill('input[name="email"]', email);
+	await page.fill('input[name="password"]', password);
+
+	// Кликаем по кнопке
+	await page.click('button[type="submit"]');
+	//await page.pause();
+
+	// Проверяем успешную авторизацию
+	await expect(page).toHaveURL(/profile/);
+
+});
+
+test('Неуспешная авторизация', async ({
+	page
+}) => {
+	await page.goto('https://netology.ru');
+
+	// Открываем форму авторизации
+	await page.click('text=Войти');
+
+	// Ждем появления всех необходимых элементов
+	await page.waitForSelector('input[name="email"]', {
+		visible: true,
+		timeout: 5000
+	});
+	await page.waitForSelector('input[name="password"]', {
+		visible: true,
+		timeout: 5000
+	});
+
+	// Заполняем форму неверными данными
+	await page.fill('input[name="email"]', 'wrong@email.com');
+	await page.fill('input[name="password"]', 'wrongpassword');
+
+	// Кликаем по кнопке
+	await page.click('button[type="submit"]');
+
+	// Проверяем сообщение об ошибке
+	await expect(page.getByTestId('login-error-hint')).toHaveText('Вы ввели неправильно логин или пароль.');
 });

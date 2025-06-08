@@ -4,7 +4,9 @@
   "description": "jest test",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --collectCoverage",
+    "coverage": "jest --coverage"
   },
   "keywords": [
     "jest",
@@ -14,6 +16,24 @@
   "author": "omelnikova",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^27.3.1"
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "jest": "^27.5.1"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
+    "collectCoverageFrom": [
+      "test/**/*.{js,jsx}",
+      "!test/**/*.test.{js,jsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/coverage/"
+    ]
   }
 }
